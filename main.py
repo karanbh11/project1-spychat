@@ -78,8 +78,12 @@ def send_secret_msg():
             encoded_message.save(file_name[0] + "output." + file_name[1])
             new_chat = Chat(message, True)
             spy.friend_list[friend_to_chat].chats.append(new_chat)
-
-            print("Your secret message is encoded in image! ")
+            urgent_message = message.find("SAVE ME" or "SOS")
+            if urgent_message == -1:
+                print("Your secret message is encoded in image! ")
+            else:
+                print('\033[1;31mWe are coming to help you Sir...\033[1;m')
+                print("Your secret message is encoded in image! ")
         else:
             print("Sorry! Your message was empty\n")
     show_menu()
