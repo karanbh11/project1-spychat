@@ -2,7 +2,10 @@
 # importing Chat class
 # importing Spy class and its associated methods
 # stand alone functions will come in handy also
-from spy_details import Spy
+from spy_details import Spy, Chat, check_spy_eligibility, message_for_spy, select_a_friend
+# importing Steganography class and its associated methods
+# for encoding and decoding messages
+from stegano import lsb
 
 
 # a function that updates the status using Spy methods
@@ -41,20 +44,74 @@ def status_update():
 # then it adds the friend to the friends list of our spy
 # if a friend is added it notifies the user by printing the message "friend added"
 def add_a_friend():
-    pass
+    friend_name = input("What is your friend's name: ")
+    if len(friend_name) > 0:
+        friend_salutation = input("What should we call your friend (Mr or Ms): ").capitalize()
+        friend_age = int(input("Age: "))
+        if check_spy_eligibility(friend_age):
+            friend_rating = float(input("Enter the rating: "))
+            if friend_rating >= spy.rating:
+                friend = Spy(friend_name, friend_salutation, friend_age, friend_rating)
+                spy.add_spy_friend(friend)
+                print("Friend added!")
+            else:
+                print("Your friend has lower rating than you and we can't allow that")
+        else:
+            print("Age is not valid")
+    else:
+        print("You didn't entered a valid name")
+    return len(spy.friend_list)
+
 
 # This function uses Steganography to encode the message and send it to the desired friend
 # it calls the Spy method named select_a_friend to select a friend out of online friends
 def send_secret_msg():
-    pass
+    friend_to_chat = select_a_friend(spy)
+    if friend_to_chat is None:
+        show_menu()
+    else:
+        input_image = input("Enter the name of the image with extension: ")
+        message = input("Type in the message ")
+        file_name = input_image.split(".")
+        if len(message) > 0:
+            encoded_message = lsb.hide(input_image, message)
+            encoded_message.save(file_name[0] + "output." + file_name[1])
+            new_chat = Chat(message, True)
+            spy.friend_list[friend_to_chat].chats.append(new_chat)
+
+            print("Your secret message is encoded in image! ")
+        else:
+            print("Sorry! Your message was empty\n")
+    show_menu()
 
 
 def read_secret_msg():
-    pass
+    sender = select_a_friend(spy)
+
+    file_name = input("What is the name of the file?")
+
+    decoded_message = lsb.reveal(file_name)
+    new_chat = Chat(decoded_message, False)
+
+    spy.friend_list[sender].chats.append(new_chat)
+
+    print("Your secret message has been saved!")
+    show_menu()
 
 
 def read_chats():
-    pass
+    read_chat_of = select_a_friend(spy)
+    print("chat history : ")
+    print('\n')
+    print('\n')
+    for a_chat in spy.friend_list[read_chat_of].chats:
+        if a_chat.sent_by_me:
+            print("Time: {} \nSender: You\nMessage: {}\nReceiver: {}"
+                  .format(a_chat.time, a_chat.message, spy.friend_list[read_chat_of].spyname))
+        else:
+            print("Time: {} \nSender: {}\nMessage: {}"
+                  .format(a_chat.time, spy.friend_list[read_chat_of].spyname, a_chat.message))
+    show_menu()
 
 
 # This function shows menu to the user
@@ -85,7 +142,27 @@ def show_menu():
 # A function that asks the user to entered the details if user isn't the default user
 # it creates a spy object that overrides the default one
 def make_a_spy():
-    pass
+    spy_name = input("What is your name : ")
+    # if user will enter a name only then further processing would take place
+    if len(spy_name) > 0:
+        spy_salutation = (input("Welcome! {} What should we call you (Mr. or Ms.) ".format(spy_name)).capitalize())
+        spy_age = int(input("What is your age : "))
+        spy_is_eligible = check_spy_eligibility(spy_age)
+        if spy_is_eligible:
+            spy_rating = float(input("Enter your rating out of 5 : "))
+            message_for_spy(spy_rating)
+
+            # Creating a Spy object with user provided details and welcoming
+            # user using methods from spy class so
+            # to encapsulate the variables of the class
+            newspy = Spy(spy_name, spy_salutation, spy_age, spy_rating)
+            return newspy
+        else:
+            print("Sorry, you are not eligible")
+            exit()
+    else:
+        print("Error: You didnt entered  a valid name")
+        exit()
 
 
 # Starting the application with a welcome note
@@ -101,7 +178,7 @@ spy.pool_of_status = ["I'm Bond", "At your service", "bow down to the king"]
 # we create to Spy objects and assign them name "friend1" & "friend2"
 # we then add these friends to spy's friend list
 friend1 = Spy("Paras", "Mr", 21, 4.99)
-friend2 = Spy("Jagdish", "Mr", 21, 2.99)
+friend2 = Spy("Sam", "Mr", 21, 2.99)
 spy.add_spy_friend(friend1)
 spy.add_spy_friend(friend2)
 
