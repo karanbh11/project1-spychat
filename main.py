@@ -73,7 +73,7 @@ def send_secret_msg():
         input_image = input("Enter the name of the image with extension: ")
         message = input("Type in the message ")
         file_name = input_image.split(".")
-        if len(message) > 0:
+        if 0 < len(message):
             encoded_message = lsb.hide(input_image, message)
             encoded_message.save(file_name[0] + "output." + file_name[1])
             new_chat = Chat(message, True)
@@ -91,6 +91,7 @@ def read_secret_msg():
     file_name = input("What is the name of the file?")
 
     decoded_message = lsb.reveal(file_name)
+
     new_chat = Chat(decoded_message, False)
 
     spy.friend_list[sender].chats.append(new_chat)
@@ -110,7 +111,9 @@ def read_chats():
                   .format(a_chat.time, a_chat.message, spy.friend_list[read_chat_of].spyname))
         else:
             print("Time: {} \nSender: {}\nMessage: {}"
-                  .format(a_chat.time, spy.friend_list[read_chat_of].spyname, a_chat.message))
+                  .format('\033[1;34m' + str(a_chat.time) + '\033[1;m',
+                          '\033[1;31m' + spy.friend_list[read_chat_of].spyname
+                          + '\033[1;m', a_chat.message))
     show_menu()
 
 

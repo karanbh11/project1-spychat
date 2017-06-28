@@ -3,7 +3,7 @@
 from datetime import datetime
 
 
-#This class defines the specifications of a spy
+# This class defines the specifications of a spy
 class Spy:
     # below are the spy methods
     # constructor for initialization of a spy
@@ -109,4 +109,3 @@ class Chat:
         self.message = message
         self.time = datetime.now()
         self.sent_by_me = sent_by_me
-
