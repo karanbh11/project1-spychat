@@ -95,7 +95,8 @@ def read_secret_msg():
     file_name = input("What is the name of the file?")
 
     decoded_message = lsb.reveal(file_name)
-    if len(decoded_message) < 10:
+    num_of_words = decoded_message.split()
+    if len(num_of_words) < 100:
         new_chat = Chat(decoded_message, False)
         spy.friend_list[sender].chats.append(new_chat)
         print("Your secret message has been saved!")
